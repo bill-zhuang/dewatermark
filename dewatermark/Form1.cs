@@ -24,45 +24,17 @@ namespace dewatermark
                 int processed_images_count = 0;
                 foreach (string filename in ofd.FileNames)
                 {
-                    try
+                    DeWaterMark.RemoveWaterMark(filename);
+
+                    processed_images_count++;
+                    if (processed_images_count == 1000)
                     {
-                        Bitmap temp = (Bitmap)Bitmap.FromFile(filename);
-
-                        if (Math.Max(temp.Width, temp.Height) == 600)
-                        {
-                            temp.Dispose();
-                            DeWaterMark.DeLarge(filename);
-                        }
-                        else
-                        {
-                            temp.Dispose();
-                            DeWaterMark.DeSmall(filename);
-                        }
-
-                        processed_images_count++;
-                        if (processed_images_count == 1000)
-                        {
-                            processed_images_count = 0;
-                            Application.DoEvents();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        string errorlogPath = Path.GetDirectoryName(filename) + "\\errorLog.txt";
-
-                        FileInfo fileInfo = new FileInfo(errorlogPath);
-                        using (FileStream fs = new FileStream(errorlogPath, FileMode.OpenOrCreate, FileAccess.Write))
-                        {
-                            StreamWriter sw = new StreamWriter(fs);
-                            sw.BaseStream.Seek(0, SeekOrigin.End);
-
-                            sw.Write("\r\nTime: {0} {1}\r\n", System.DateTime.Now.ToShortDateString(), System.DateTime.Now.ToLongTimeString());
-                            sw.Write("Error message: " + Path.GetFileName(filename) + "   " + ex.Message + "\r\n");
-                            sw.Flush();
-                            sw.Close();
-                        }
+                        processed_images_count = 0;
+                        Application.DoEvents();
                     }
                 }
+
+                MessageBox.Show("Finished.");
             }
             else
             {
