@@ -16,5 +16,6 @@ namespace dewatermark
         public static string LOGO_DIFFICULT_ORIGINAL = "\\logo df(Original)";
         public static string NO_LOGO_ORIGINAL = "\\no logo(Original)";
         public static string LOGO_NEED_CHECK_ORIGINAL = "\\need check(Original)";
+        public static string LOGO_INPAINTED = "\\Inpainted(median filter)";
     }
 }

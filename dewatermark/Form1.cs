@@ -21,25 +21,47 @@ namespace dewatermark
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                int processed_images_count = 0;
-                foreach (string filename in ofd.FileNames)
-                {
-                    DeWaterMark.RemoveWaterMark(filename);
-
-                    processed_images_count++;
-                    if (processed_images_count == 1000)
-                    {
-                        processed_images_count = 0;
-                        Application.DoEvents();
-                    }
-                }
-
-                MessageBox.Show("Finished.");
+                removeWaterMark(ofd.FileNames);
             }
             else
             {
                 return;
             }
+        }
+
+        private void btnDeWaterMarkByChooseFolder_Click(object sender, EventArgs e)
+        {
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+
+            if (fbd.ShowDialog() == DialogResult.OK)
+            {
+                //not support folders in folder
+                string[] files = Directory.GetFiles(fbd.SelectedPath);
+
+                removeWaterMark(files);
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        private void removeWaterMark(string[] files_path)
+        {
+            int processed_images_count = 0;
+            foreach (string filename in files_path)
+            {
+                DeWaterMark.RemoveWaterMark(filename);
+
+                processed_images_count++;
+                if (processed_images_count == 1000)
+                {
+                    processed_images_count = 0;
+                    Application.DoEvents();
+                }
+            }
+
+            MessageBox.Show("Finished.");
         }
     }
 }

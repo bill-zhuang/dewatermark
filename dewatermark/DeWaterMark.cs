@@ -203,7 +203,7 @@ namespace dewatermark
             Point watermark_start_point = GetWatermarkStartPoint(watermark_zoom_ratio);
 
             bool is_saved = false;
-            
+
             int match_points_num = SurfMatch.GetMatchPointsNumber(input_image_color_clone, watermark_color_image_85);
             if (match_points_num > 2)
             {
@@ -288,7 +288,7 @@ namespace dewatermark
                 }
                 input_image_color_clone = ImageInfo.SetImageBytes(input_image_color_info, PixelFormat.Format24bppRgb);
 
-                SaveBitmap(input_image_color_clone, MoveToFolder.BIT24_CONVERT_FROM_BIT8);
+                FileOperation.SaveBitmap(input_image_color_clone, input_img_path, MoveToFolder.BIT24_CONVERT_FROM_BIT8);
                 MoveOriginalBitmap(MoveToFolder.BIT8_ORIGINAL);
             }
         }
@@ -396,21 +396,27 @@ namespace dewatermark
                     Bitmap target1 = ImageInfo.SetImageBytes(input_image_color_info, input_image_color_clone.PixelFormat);
                     if (texture)
                     {
-                        SaveBitmap(target1, MoveToFolder.LOGO_TEXTURE);
+                        FileOperation.SaveBitmap(target1, input_img_path, MoveToFolder.LOGO_TEXTURE);
                         MoveOriginalBitmap(MoveToFolder.LOGO_TEXTURE_ORIGINAL);
+                        
+                        //inpaint 
+                        Inpaint.ByTeleaMethod(Path.GetDirectoryName(input_img_path) + MoveToFolder.LOGO_TEXTURE);
                     }
                     else
                     {
                         if (whitepercent > white_area_percent_threshold)
                         {
-                            SaveBitmap(target1, MoveToFolder.LOGO_EDGE_INPAINT);
+                            FileOperation.SaveBitmap(target1, input_img_path, MoveToFolder.LOGO_EDGE_INPAINT);
                             MoveOriginalBitmap(MoveToFolder.LOGO_EDGE_INPAINT_ORIGINAL);
+
+                            //inpaint 
+                            Inpaint.ByTeleaMethod(Path.GetDirectoryName(input_img_path) + MoveToFolder.LOGO_EDGE_INPAINT);
                         }
                         else
                         {
                             if (!(input_image_color_clone.Width == input_image_color_clone.Height && input_image_color_clone.Width == image_width))
                             {
-                                SaveBitmap(target1, MoveToFolder.LOGO_DIFFICULT);
+                                FileOperation.SaveBitmap(target1, input_img_path, MoveToFolder.LOGO_DIFFICULT);
                                 MoveOriginalBitmap(MoveToFolder.LOGO_DIFFICULT_ORIGINAL);
                             }
                         }
@@ -422,41 +428,6 @@ namespace dewatermark
             }
 
             return true;
-        }
-
-        private static void SaveBitmap(Bitmap bmp, string save_to_folder_name)
-        {
-            string save_path = Path.GetDirectoryName(input_img_path) + save_to_folder_name;
-            if (!Directory.Exists(save_path))
-            {
-                Directory.CreateDirectory(save_path);
-            }
-
-            string fullpath = save_path + "\\" + Path.GetFileName(input_img_path);
-            if (File.Exists(fullpath))
-            {
-                File.Delete(fullpath);
-            }
-
-            //ImageCodecInfo ici = null;
-            //ImageCodecInfo[] codeInfo = ImageCodecInfo.GetImageEncoders();
-            //for (int i = 0; i < codeInfo.Length; i++)
-            //{
-            //    if (codeInfo[i].MimeType == "image/jpeg")
-            //    {
-            //        ici = codeInfo[i];
-            //        break;
-            //    }
-            //}
-
-            //System.Drawing.Imaging.Encoder enc = System.Drawing.Imaging.Encoder.Quality;
-            //EncoderParameter epara = new EncoderParameter(enc, 75L); //qualify level: 75%
-            //EncoderParameters eparas = new EncoderParameters(1);
-            //eparas.Param[0] = epara;
-
-            //bmp.Save(fullpath, ici, eparas);
-            bmp.Save(fullpath);
-            bmp.Dispose();
         }
 
         private static void MoveOriginalBitmap(string move_to_folder_name)
@@ -878,7 +849,7 @@ namespace dewatermark
         private static void SaveWatermarkRemovedImage()
         {
             input_image_color_clone = ImageInfo.SetImageBytes(input_image_color_info, input_image_color_clone.PixelFormat);
-            SaveBitmap(input_image_color_clone, MoveToFolder.LOGO_CLEANED);
+            FileOperation.SaveBitmap(input_image_color_clone, input_img_path, MoveToFolder.LOGO_CLEANED);
             MoveOriginalBitmap(MoveToFolder.LOGO_CLEANED_ORIGINAL);
         }
     }
